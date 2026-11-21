@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+<meta charset="utf-8">
+<title>{{titulo}}</title>
+<meta name="author" content="{{autor}}">
+<meta name="description" content="{{subtitulo}}">
+<meta name="generator" content="ebooks-estudio build.py · base.css v1.1">
+<link rel="stylesheet" href="{{css_href}}">
+<style>{{css_overrides}}</style>
+</head>
+<body>
+
+<!-- PORTADA ············································· -->
+<section class="cover">
+  <div class="cover__frame"></div>
+  <div class="cover__series">{{serie}}</div>
+  <div class="cover__num"><small>Libro</small>{{libro}}</div>
+  <h1 class="cover__title" style="border:0;padding:0;string-set:none">{{titulo}}</h1>
+  <p class="cover__subtitle">{{subtitulo}}</p>
+  <div class="cover__foot"><span>{{autor}}</span><span>{{fecha}}</span></div>
+  <span class="book-title-anchor">{{titulo_corto}}</span>
+</section>
+
+<!-- ÍNDICE ·············································· -->
+<nav class="toc">
+  <h2 class="toc__title">Índice</h2>
+  {{toc}}
+</nav>
+
+<!-- CONTENIDO ··········································· -->
+{{body}}
+
+</body>
+</html>

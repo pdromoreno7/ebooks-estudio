@@ -1,0 +1,262 @@
+/* =====================================================================
+   Ebooks de estudio — base.css  (v1.1, agnóstico al tema)
+   Dirección A · "Cuaderno editorial" (Opennote + disciplina Medium)
+   Grayscale-first: nada depende del color. Página 120×160 mm (3:4).
+   Motor objetivo: WeasyPrint ≥ 60.
+   ===================================================================== */
+
+/* ---------- 1. Fuentes (incrustadas, OFL) ---------------------------- */
+@font-face { font-family: "Source Serif 4"; font-weight: 400; font-style: normal; src: url("fonts/source-serif-4-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Source Serif 4"; font-weight: 400; font-style: italic; src: url("fonts/source-serif-4-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Source Serif 4"; font-weight: 600; font-style: normal; src: url("fonts/source-serif-4-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Source Serif 4"; font-weight: 600; font-style: italic; src: url("fonts/source-serif-4-latin-600-italic.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-style: normal; src: url("fonts/inter-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; font-style: italic; src: url("fonts/inter-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 500; font-style: normal; src: url("fonts/inter-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 600; font-style: normal; src: url("fonts/inter-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: normal; src: url("fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-style: italic; src: url("fonts/jetbrains-mono-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 700; font-style: normal; src: url("fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 700; font-style: italic; src: url("fonts/jetbrains-mono-latin-700-italic.woff2") format("woff2"); }
+
+/* ---------- 2. Tokens ------------------------------------------------- */
+:root {
+  /* color — valores entre paréntesis = gris equivalente (luma Rec.601) */
+  --paper:    #FAF7F0;  /* (247) fondo marfil; build --paper white => #FFFFFF */
+  --ink:      #1C1A17;  /* (26)  texto principal — 16.5:1 */
+  --ink-2:    #45403A;  /* (65)  texto secundario — 9.6:1 */
+  --ink-3:    #625C53;  /* (93)  etiquetas, pies — 6.2:1 */
+  --rule:     #4F4A43;  /* (75)  bordes de 1px: oscuros para que no desaparezcan en e-ink */
+  --rule-soft:#9A9388;  /* (148) filetes internos de tabla — solo decorativo */
+  --wash:     #EFEAE0;  /* (234) fondo de código y cabeceras */
+  --wash-2:   #E2DACB;  /* (218) texto destacado <mark> */
+  --sepia:    #74552A;  /* (89)  acento: "En la práctica" */
+  --oxblood:  #7B2D26;  /* (66)  acento: "Ojo / Error común" */
+  --violet:   #4A3D78;  /* (70)  acento: "Analogía" */
+
+  /* tipografía */
+  --serif: "Source Serif 4", "Source Serif Pro", Georgia, serif;
+  --sans:  "Inter", "Helvetica Neue", Arial, sans-serif;
+  --mono:  "JetBrains Mono", "Menlo", monospace;
+  --fs-body: 10.5pt;  --lh-body: 1.45;
+  --fs-small: 8pt;    --fs-label: 6.8pt;  --fs-code: 8.1pt;
+
+  /* espaciado (escala de 4 pt) */
+  --s1: 2pt; --s2: 4pt; --s3: 6pt; --s4: 8pt; --s5: 12pt; --s6: 16pt; --s7: 24pt; --s8: 32pt;
+
+  /* bordes */
+  --bw: 0.75pt;      /* = 1px CSS: el borde estándar */
+  --bw-strong: 2pt;  /* solo "Ojo" (filete superior) */
+}
+
+/* ---------- 3. Página ------------------------------------------------- */
+@page {
+  size: 120mm 160mm;
+  margin: 13mm 10mm 13mm 10mm;
+  background: var(--paper);
+  @top-left  { content: string(book-title); font: 500 6.6pt/1 var(--sans); color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; vertical-align: bottom; padding-bottom: 3.2mm; }
+  @top-right { content: string(chapter-title); font: italic 400 7.6pt/1 var(--serif); color: var(--ink-3); vertical-align: bottom; padding-bottom: 3mm; }
+  @bottom-center { content: counter(page); font: 500 7.2pt/1 var(--sans); color: var(--ink-2); vertical-align: top; padding-top: 3.5mm; }
+}
+@page :blank { @top-left { content: none; } @top-right { content: none; } @bottom-center { content: none; } }
+@page cover   { margin: 0; @top-left { content: none; } @top-right { content: none; } @bottom-center { content: none; } }
+@page front   { @top-left { content: none; } @top-right { content: none; } @bottom-center { content: counter(page, lower-roman); } }
+@page opener  { @top-left { content: none; } @top-right { content: none; } }
+
+html { font-family: var(--serif); font-size: var(--fs-body); line-height: var(--lh-body); color: var(--ink);
+       font-kerning: normal; font-variant-ligatures: common-ligatures; hyphens: auto; hyphenate-character: "-"; hyphenate-limit-chars: 7 3 3; }
+body { margin: 0; }
+.book-title-anchor { string-set: book-title content(); display: block; height: 0; overflow: hidden; }
+
+/* ---------- 4. Portada ------------------------------------------------ */
+.cover { page: cover; height: 160mm; box-sizing: border-box; padding: 12mm 11mm; break-after: page; position: relative; }
+.cover__frame { position: absolute; top: 7mm; left: 7mm; right: 7mm; bottom: 7mm; border: var(--bw) solid var(--rule); }
+.cover__series { position: relative; font: 600 6.8pt/1.3 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); padding-top: 4mm; }
+.cover__num { position: relative; font: 400 64pt/1 var(--serif); margin: 26mm 0 0; letter-spacing: -.02em; }
+.cover__num small { display: block; font: 600 6.8pt/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3mm; }
+.cover__title { position: relative; font: 400 23pt/1.12 var(--serif); margin: 8mm 0 0; letter-spacing: -.005em; hyphens: manual; }
+.cover__subtitle { position: relative; font: italic 400 11pt/1.4 var(--serif); color: var(--ink-2); margin: 4mm 0 0; }
+.cover__foot { position: absolute; left: 11mm; right: 11mm; bottom: 13mm; border-top: var(--bw) solid var(--rule); padding-top: 3mm;
+               font: 500 6.8pt/1.4 var(--sans); color: var(--ink-2); letter-spacing: .04em; display: flex; justify-content: space-between; }
+
+/* ---------- 5. Índice ------------------------------------------------- */
+.toc { page: front; break-after: page; }
+.toc h2.toc__title { font: 400 18pt/1.2 var(--serif); margin: 0 0 var(--s6); padding-bottom: var(--s3); border-bottom: var(--bw) solid var(--rule); string-set: none; }
+.toc ol { list-style: none; margin: 0; padding: 0; }
+.toc li { margin: 0; padding: 0; }
+.toc a { color: inherit; text-decoration: none; display: block; }
+.toc a::after { content: leader(" ") target-counter(attr(href), page); font: 500 8pt/1 var(--sans); color: var(--ink-2); }
+.toc .toc-ch > a { font: 400 11pt/1.35 var(--serif); margin-top: var(--s5); }
+.toc .toc-ch > a .n { font: 600 7pt/1 var(--sans); letter-spacing: .1em; color: var(--ink-3); display: inline-block; width: 7mm; }
+.toc .toc-sec > a { font: 400 9pt/1.5 var(--serif); color: var(--ink-2); padding-left: 7mm; }
+.toc .toc-back > a { font: 400 9pt/1.5 var(--serif); color: var(--ink-2); padding-left: 7mm; font-style: italic; }
+
+/* ---------- 6. Capítulo y jerarquía ---------------------------------- */
+.chapter { break-before: page; }
+.chapter__opener { page: opener; padding-top: 18mm; margin-bottom: var(--s7); }
+.chapter__kicker { font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 var(--s4); }
+.chapter__num { font: 400 40pt/1 var(--serif); color: var(--ink); margin: 0 0 var(--s5); }
+h1 { font: 400 22pt/1.15 var(--serif); letter-spacing: -.005em; margin: 0; padding-bottom: var(--s5); border-bottom: var(--bw) solid var(--rule); string-set: chapter-title content(); hyphens: manual; }
+.lede { font: italic 400 11.2pt/1.45 var(--serif); color: var(--ink-2); margin: var(--s5) 0 0; }
+
+h2 { font: 400 14.5pt/1.25 var(--serif); margin: var(--s7) 0 var(--s4); break-after: avoid; hyphens: manual; }
+h2 .h-num { font: 600 7.2pt/1 var(--sans); letter-spacing: .08em; color: var(--ink-3); margin-right: 2.2mm; vertical-align: 2pt; }
+h3 { font: italic 400 11.5pt/1.3 var(--serif); margin: var(--s6) 0 var(--s2); break-after: avoid; }
+h4 { font: 600 var(--fs-label)/1.2 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); margin: var(--s5) 0 var(--s2); break-after: avoid; }
+
+/* ---------- 7. Texto -------------------------------------------------- */
+p { margin: 0 0 var(--s4); orphans: 2; widows: 2; text-align: left; }
+strong, b { font-weight: 600; }
+em, i { font-style: italic; }
+a { color: inherit; text-decoration: underline; text-decoration-thickness: .5pt; text-underline-offset: 1.5pt; }
+code { font-family: var(--mono); font-size: .84em; background: var(--wash); padding: 0 1pt; border-radius: 1.5pt; hyphens: none; overflow-wrap: anywhere; }
+mark { background: var(--wash-2); color: var(--ink); padding: 0 1.5pt; font-weight: 600; box-decoration-break: clone; }
+ul, ol { margin: 0 0 var(--s4); padding-left: 5mm; }
+li { margin: 0 0 var(--s2); }
+li::marker { color: var(--ink-2); font-family: var(--sans); font-size: .85em; }
+ul > li { list-style-type: "–  "; }
+ol > li::marker { font-weight: 600; }
+hr { border: 0; border-top: var(--bw) solid var(--rule); margin: var(--s6) 25%; }
+
+/* cita normal */
+blockquote { margin: var(--s5) 0; padding: 0 0 0 5mm; font-style: italic; color: var(--ink-2); }
+blockquote p:last-child { margin-bottom: 0; }
+
+/* pull quote */
+.pull { margin: var(--s6) 4mm; padding: var(--s5) 0; border-top: var(--bw) solid var(--rule); border-bottom: var(--bw) solid var(--rule);
+        font: 400 13.5pt/1.3 var(--serif); text-align: center; break-inside: avoid; hyphens: manual; }
+.pull p { margin: 0; }
+.pull .pull__by { display: block; margin-top: var(--s3); font: 500 6.8pt/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+
+/* ---------- 8. Recuadros (callouts) ----------------------------------
+   Cada tipo = borde distinto + etiqueta en texto + glifo. Nunca solo color.
+   Las etiquetas se cambian por libro (front matter `recuadros`). */
+.box { margin: var(--s5) 0; padding: var(--s4) var(--s5) var(--s3); border: var(--bw) solid var(--rule); break-inside: avoid; font-size: 9.8pt; line-height: 1.42; }
+.box > p:last-child, .box > ul:last-child, .box > ol:last-child { margin-bottom: var(--s2); }
+.box__label { display: flex; align-items: center; gap: 1.8mm; font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .13em; text-transform: uppercase; margin: 0 0 var(--s3); }
+.box__label svg { width: 3.1mm; height: 3.1mm; flex: none; }
+.box__title { font: 400 11pt/1.3 var(--serif); margin: 0 0 var(--s2); }
+
+/* Concepto clave — marco sólido completo, etiqueta invertida (más contraste) */
+.box--concepto { border: var(--bw) solid var(--ink); }
+.box--concepto .box__label { display: inline-flex; background: var(--ink); color: var(--paper); padding: 1.4pt 4pt 1.4pt 3pt; margin-left: -1pt; }
+.box--concepto .box__label svg { width: 2.6mm; height: 2.6mm; }
+.box--concepto .box__title { font-size: 11.5pt; }
+
+/* Analogía — borde discontinuo, violeta */
+.box--analogia { border: var(--bw) dashed var(--violet); }
+.box--analogia .box__label { color: var(--violet); }
+
+/* Ojo / Error común — filete superior grueso + laterales finos, oxblood */
+.box--ojo { border: var(--bw) solid var(--oxblood); border-top: var(--bw-strong) solid var(--oxblood); }
+.box--ojo .box__label { color: var(--oxblood); }
+
+/* En la práctica — sin laterales, doble filete arriba y abajo, sepia; cuerpo en itálica (es "voz") */
+.box--practica { border: 0; border-top: 2.2pt double var(--sepia); border-bottom: 2.2pt double var(--sepia); padding-left: 0; padding-right: 0; }
+.box--practica .box__label { color: var(--sepia); }
+.box--practica p { font-style: italic; }
+.box--practica p em { font-style: normal; }
+
+/* Ejemplo — marco sólido con barra de cabecera rellena; puede contener código o pasos */
+.box--ejemplo { padding: 0; border: var(--bw) solid var(--rule); break-inside: auto; }
+.box--ejemplo > .box__label, .box--ejemplo > p:first-of-type { break-after: avoid; }
+.box--ejemplo > .box__label { background: var(--wash); border-bottom: var(--bw) solid var(--rule); padding: 4pt var(--s4); margin: 0; color: var(--ink); }
+.box--ejemplo > *:not(.box__label) { margin-left: var(--s4); margin-right: var(--s4); }
+.box--ejemplo > p:first-of-type, .box--ejemplo > .box__title { margin-top: var(--s4); }
+.box--ejemplo .code { margin-left: 0; margin-right: 0; border-left: 0; border-right: 0; }
+.box--ejemplo .code:last-child { border-bottom: 0; margin-bottom: 0; }
+.box--ejemplo figure.shot { margin-left: var(--s4); margin-right: var(--s4); }
+
+/* Dato clave — filete izquierdo grueso + cifra grande en serif */
+.box--dato { border: 0; border-left: var(--bw-strong) solid var(--ink); padding: var(--s2) 0 var(--s2) var(--s5); }
+.box--dato .box__label { color: var(--ink-2); }
+.box--dato .dato__cifra { font: 400 24pt/1.05 var(--serif); letter-spacing: -.01em; margin: 0 0 var(--s3); hyphens: manual; }
+
+/* ---------- 9. Código ------------------------------------------------- */
+.code { margin: var(--s5) 0; border: var(--bw) solid var(--rule); background: var(--wash); break-inside: auto; }
+.code__file { display: flex; justify-content: space-between; align-items: center; font: 500 6.6pt/1 var(--sans); color: var(--ink-2); letter-spacing: .03em;
+              padding: 3.6pt var(--s4); border-bottom: var(--bw) solid var(--rule); background: var(--paper); break-after: avoid; }
+.code__file b { font-weight: 600; color: var(--ink); }
+.code__file .lang { text-transform: uppercase; letter-spacing: .12em; color: var(--ink-3); font-weight: 600; }
+.code pre { margin: 0; padding: var(--s3) var(--s4) var(--s3) 1.2mm; font: 400 var(--fs-code)/1.42 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; hyphens: none; tab-size: 2; color: var(--ink); }
+.code .ln { display: block; break-inside: avoid; position: relative; }
+.code .lc { display: block; text-indent: -2ch; }
+.code.numbered pre { padding-left: 0; }
+.code.numbered .ln { padding-left: 6.8mm; }
+.code.numbered .ln::before { content: attr(data-n); position: absolute; left: 0; width: 5.2mm; text-align: right; color: var(--ink-3); font-size: 6.8pt; }
+/* resaltado en grises: forma, no color */
+.code .k  { font-weight: 700; }                         /* palabra reservada */
+.code .c  { font-style: italic; color: var(--ink-3); }  /* comentario */
+.code .s  { color: var(--ink-2); }                      /* string */
+.code .d  { font-style: italic; font-weight: 700; }     /* decorador */
+.code .t  { font-style: italic; }                       /* tipo / clase */
+.code .n  { }                                           /* número */
+.code .hl { background: var(--wash-2); }                /* línea marcada */
+.code pre::after { content: none; }
+
+/* ---------- 10. Tablas ------------------------------------------------ */
+table { width: 100%; border-collapse: collapse; margin: var(--s5) 0; font: 400 7.9pt/1.38 var(--sans); break-inside: auto; }
+caption { caption-side: top; text-align: left; font: 600 var(--fs-label)/1.3 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); padding-bottom: var(--s3); }
+thead th { font-weight: 600; text-align: left; vertical-align: bottom; border-top: var(--bw) solid var(--ink); border-bottom: var(--bw) solid var(--ink); padding: 4pt 4pt; background: var(--wash); }
+tbody td { vertical-align: top; padding: 4pt 4pt; border-bottom: .5pt solid var(--rule-soft); }
+tbody tr:last-child td { border-bottom: var(--bw) solid var(--ink); }
+tbody td:first-child { font-weight: 600; color: var(--ink); width: 21%; hyphens: manual; }
+tbody tr { break-inside: avoid; }
+th, td { hyphens: auto; }
+td code { font-size: .9em; }
+
+/* ---------- 11. Diagramas (SVG) y capturas (PNG/JPG) ----------------- */
+figure { margin: var(--s6) 0; break-inside: avoid; }
+figure.diagram { border: var(--bw) solid var(--rule); padding: var(--s4); }
+figure svg { display: block; width: 100%; height: auto; }
+figcaption { font: 400 7.4pt/1.4 var(--sans); color: var(--ink-2); margin-top: var(--s4); padding-top: var(--s3); border-top: .5pt solid var(--rule-soft); }
+figcaption b { font-weight: 600; color: var(--ink); letter-spacing: .04em; }
+/* captura: la imagen lleva su propio marco fino; nunca más alta que ~60 % de la caja de texto */
+figure.shot { text-align: center; }
+figure.shot img { display: block; margin: 0 auto; width: 100%; max-height: 84mm; object-fit: contain; border: var(--bw) solid var(--rule); box-sizing: border-box; }
+figure.shot figcaption { text-align: left; }
+
+/* ---------- 12. Glosario --------------------------------------------- */
+dl { margin: var(--s5) 0; }
+dt { font: 400 11pt/1.3 var(--serif); margin: var(--s5) 0 var(--s1); break-after: avoid; padding-top: var(--s4); border-top: .5pt solid var(--rule-soft); }
+dt:first-child { border-top: 0; padding-top: 0; }
+dt .pos { font: 600 6.4pt/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-left: 2mm; vertical-align: 1.5pt; }
+dd { margin: 0 0 var(--s2); font-size: 9.8pt; }
+dd.see { font: 400 7.6pt/1.4 var(--sans); color: var(--ink-2); }
+dd.see::before { content: "Ver también  "; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: 6.4pt; color: var(--ink-3); }
+
+/* ---------- 13. Autoevaluación (pregunta/respuesta) ------------------ */
+.qa { margin: var(--s5) 0; border: var(--bw) solid var(--rule); break-inside: avoid; display: flex; }
+.qa__n { flex: none; width: 9mm; border-right: var(--bw) solid var(--rule); font: 400 15pt/1 var(--serif); text-align: center; padding-top: var(--s4); }
+.qa__body { padding: var(--s4) var(--s5); flex: 1; }
+.qa__label { font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .13em; text-transform: uppercase; color: var(--ink-3); margin-bottom: var(--s3); }
+.qa__q { font: 400 10.5pt/1.4 var(--serif); margin: 0 0 var(--s4); }
+.qa__lines { height: 10mm; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 5.6mm, var(--rule-soft) 5.6mm, var(--rule-soft) 5.8mm); margin-bottom: var(--s4); }
+.qa__goto { font: 500 7pt/1 var(--sans); color: var(--ink-2); text-decoration: none; }
+.qa__goto::after { content: target-counter(attr(href), page); font-weight: 600; color: var(--ink); }
+
+.answers { break-before: page; }
+.answers h2 { margin-top: 0; }
+.answer { margin: 0 0 var(--s5); padding-bottom: var(--s4); border-bottom: .5pt solid var(--rule-soft); break-inside: avoid; }
+.answer__head { font: 600 var(--fs-label)/1.3 var(--sans); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: var(--s2); }
+.answer__q { font-style: italic; color: var(--ink-2); margin-bottom: var(--s2); }
+.answer p:last-child { margin-bottom: 0; }
+
+/* ---------- 14. Resumen de capítulo (1 página) ----------------------- */
+.summary { break-before: page; break-after: page; break-inside: avoid; border: var(--bw) solid var(--ink); padding: var(--s5) var(--s5) var(--s4); }
+.summary__label { font: 600 var(--fs-label)/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: var(--s3); display: flex; align-items: center; gap: 1.8mm; }
+.summary__label svg { width: 3.1mm; height: 3.1mm; }
+.summary h2 { margin: 0 0 var(--s3); font-size: 14pt; }
+.summary ol { counter-reset: s; list-style: none; padding: 0; margin: 0; }
+.summary ol > li { counter-increment: s; position: relative; padding: 3.5pt 0 3.5pt 7mm; border-top: .5pt solid var(--rule-soft); margin: 0; font-size: 9.4pt; line-height: 1.36; }
+.summary ol > li:first-child { border-top: 0; }
+.summary ol > li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 3.5pt; font: 600 7.2pt/1.9 var(--sans); color: var(--ink-3); letter-spacing: .04em; }
+.summary__foot { margin-top: var(--s3); padding-top: var(--s3); border-top: var(--bw) solid var(--rule); font: 400 7.6pt/1.45 var(--sans); color: var(--ink-2); }
+.summary__foot b { font-weight: 600; color: var(--ink); }
+
+/* ---------- 15. Utilidades ------------------------------------------- */
+.page-break { break-before: page; }
+.keep { break-inside: avoid; }
+.small { font: 400 var(--fs-small)/1.45 var(--sans); color: var(--ink-2); }
+.backmatter { break-before: page; }
+.backmatter > h1 { margin-top: 0; }

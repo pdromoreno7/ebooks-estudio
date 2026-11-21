@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 70" role="img" aria-label="Flujo: libro.md y recursos pasan por build.py y salen como PDF">
+  <rect x="2" y="12" width="58" height="34" fill="#FAF7F0" stroke="#1C1A17" stroke-width="1"/>
+  <text x="31" y="27" text-anchor="middle" font-family="Inter" font-weight="600" font-size="7.6" fill="#1C1A17">libro.md</text>
+  <text x="31" y="38" text-anchor="middle" font-family="Inter" font-size="6.8" fill="#45403A">texto y bloques</text>
+  <rect x="2" y="52" width="58" height="16" fill="#FAF7F0" stroke="#1C1A17" stroke-width="1" stroke-dasharray="3 2"/>
+  <text x="31" y="62.5" text-anchor="middle" font-family="Inter" font-size="6.8" fill="#45403A">svg · png · jpg</text>
+  <line x1="60" y1="29" x2="84" y2="29" stroke="#1C1A17" stroke-width="1"/>
+  <polygon points="90,29 84,26 84,32" fill="#1C1A17"/>
+  <line x1="60" y1="60" x2="72" y2="60" stroke="#1C1A17" stroke-width="1"/>
+  <line x1="72" y1="60" x2="72" y2="33" stroke="#1C1A17" stroke-width="1"/>
+  <rect x="90" y="12" width="64" height="34" fill="#EFEAE0" stroke="#1C1A17" stroke-width="1"/>
+  <text x="122" y="27" text-anchor="middle" font-family="Source Serif 4" font-size="10.5" fill="#1C1A17">build.py</text>
+  <text x="122" y="38" text-anchor="middle" font-family="Inter" font-size="6.8" fill="#45403A">+ base.css</text>
+  <line x1="154" y1="29" x2="178" y2="29" stroke="#1C1A17" stroke-width="1"/>
+  <polygon points="184,29 178,26 178,32" fill="#1C1A17"/>
+  <rect x="184" y="8" width="54" height="42" fill="#1C1A17"/>
+  <text x="211" y="27" text-anchor="middle" font-family="Inter" font-weight="600" font-size="7.6" fill="#FAF7F0">libro.pdf</text>
+  <text x="211" y="38" text-anchor="middle" font-family="Inter" font-size="6.8" fill="#FAF7F0">para Kindle</text>
+</svg>
