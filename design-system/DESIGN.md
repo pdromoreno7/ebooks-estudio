@@ -185,7 +185,8 @@ Reglas para preparar la captura:
 |---|---|
 | `base.css` | Todos los tokens y componentes. Única hoja de estilos. |
 | `template.html` | Esqueleto: portada + índice + `{{body}}`. |
-| `build.py` | Markdown → HTML → PDF (WeasyPrint); resaltado Pygments; índice, numeración, respuestas y capturas automáticos. |
+| `build.py` | Markdown → HTML → PDF (WeasyPrint); resaltado Pygments; índice, numeración, respuestas y capturas automáticos; exportación a Anki. |
+| `check.py` | Revisión previa sin renderizar: caracteres sin fuente, código largo, imágenes, resúmenes, preguntas, fuentes. |
 | `build.md` | Instalación, uso y sintaxis del Markdown. |
 | `fonts/` | 12 WOFF2 + licencias OFL. |
 | `../libros/00-muestra/` | Libro de muestra con todos los componentes: referencia viva y plantilla para copiar. |

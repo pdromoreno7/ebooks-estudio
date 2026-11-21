@@ -1,34 +1,18 @@
----
-libro: 0
-serie: Ebooks de estudio · Muestra del sistema
-titulo: Cómo se arma un libro de esta serie
-titulo_corto: Muestra del sistema
-subtitulo: Todos los componentes en un solo capítulo, para copiar y adaptar a cualquier tema
-autor: Pedro Moreno · notas de estudio
-fecha: Noviembre 2026
-lang: es
-recuadros:
-  analogia: Analogía
-  practica: En la práctica
-  ejemplo: Ejemplo
-  dato: Dato clave
----
-
 # Un libro, un archivo de texto
 
 :::lede
-Cada libro es un único archivo Markdown con bloques especiales. El script lo convierte en un PDF pensado para leerse en un Kindle: páginas de 120 × 160 mm, todo legible en escala de grises.
+Cada libro es una carpeta con un archivo de metadatos y un Markdown por capítulo. El script lo convierte en un PDF pensado para leerse en un Kindle: páginas de 120 × 160 mm, todo legible en escala de grises.
 :::
 
 ## De dónde sale el PDF
 
-Escribes el contenido en `libro.md`. Los diagramas van en `diagramas/` como SVG y los pantallazos en `capturas/` como PNG o JPG. Luego ejecutas `build.py` y obtienes el PDF con portada, índice y numeración automáticos.
+Escribes los metadatos en `libro.yml` y cada capítulo en `capitulos/01-...md`. Los diagramas van en `diagramas/` como SVG y los pantallazos en `capturas/` como PNG o JPG. Luego ejecutas `build.py` y obtienes el PDF con portada, índice y numeración automáticos.
 
 :::figura "<b>Figura 1.1</b> · Del Markdown al PDF. Las imágenes viven junto al libro y se enlazan con rutas relativas." src=diagramas/flujo.svg
 :::
 
 :::concepto "Agnóstico al tema"
-El motor no sabe de qué trata el libro. Las etiquetas de los recuadros se definen en el encabezado de cada libro (clave `recuadros`), así que sirven igual para programación, marketing o idiomas.
+El motor no sabe de qué trata el libro. Las etiquetas de los recuadros se definen en `libro.yml` (clave `recuadros`), así que sirven igual para programación, marketing o idiomas.
 :::
 
 ## Recuadros
@@ -53,9 +37,9 @@ Altura máxima aproximada de una captura respecto a la caja de texto. Más alta,
 
 :::ejemplo "Un bloque de ejemplo con pasos"
 1. Copia la carpeta `libros/00-muestra/` con otro nombre.
-2. Cambia el encabezado: número, serie, título y etiquetas.
+2. Cambia `libro.yml`: número, serie, título y etiquetas.
 3. Escribe los capítulos con `#` y las secciones con `##`.
-4. Ejecuta `python3 design-system/build.py libros/01-tema/libro.md`.
+4. Ejecuta `python3 design-system/build.py libros/01-tema`.
 :::
 
 ## Capturas de pantalla
@@ -71,12 +55,16 @@ Las capturas se insertan con el bloque `:::captura`. Llevan marco fino, pie de f
 | Captura | Mostrar una herramienta real | PNG o JPG recortado |
 | Tabla | Comparar opciones con los mismos criterios | Markdown, máx. 3 columnas |
 
+## Fuentes
+
+- Regla del 60 %: `design-system/DESIGN.md`, sección 6.13, de este mismo repositorio.
+
 :::pull "Idea para recordar"
 Un buen libro de estudio se escribe para el lector cansado de las 10 de la noche.
 :::
 
 :::pregunta "¿Dónde se cambian las etiquetas de los recuadros?"
-En el encabezado del libro, con la clave `recuadros`. También se puede cambiar una sola con `etiqueta="..."` en la línea que abre el bloque.
+En `libro.yml`, con la clave `recuadros`. También se puede cambiar una sola con `etiqueta="..."` en la línea que abre el bloque.
 :::
 
 :::pregunta "¿Por qué conviene recortar las capturas?"
@@ -84,7 +72,7 @@ Porque el Kindle muestra la página a unos 104 mm de ancho y en grises: una pant
 :::
 
 :::resumen "Lo esencial del sistema"
-1. Un libro = un `libro.md` + carpetas `diagramas/` y `capturas/`.
+1. Un libro = `libro.yml` + `capitulos/` + `diagramas/` y `capturas/`.
 2. `# ` crea un capítulo; `## ` una sección numerada.
 3. Seis recuadros: concepto, analogía, ojo, práctica, ejemplo y dato.
 4. Las etiquetas de los recuadros se definen por libro en `recuadros`.
@@ -94,13 +82,3 @@ Porque el Kindle muestra la página a unos 104 mm de ancho y en grises: una pant
 
 **Siguiente paso:** copia esta carpeta y empieza tu propio libro.
 :::
-
-# Glosario {.apendice}
-
-Captura <span class="pos">componente</span>
-: Imagen rasterizada (PNG o JPG) de una herramienta real, recortada y con pie de figura.
-: Ver también: [Diagrama](#g-diagrama)
-
-Diagrama <span class="pos">componente</span>
-: Figura vectorial en SVG que explica una relación o un flujo. Se escala sin perder nitidez.
-: Ver también: [Captura](#g-captura)

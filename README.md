@@ -12,17 +12,18 @@ Sirve para cualquier tema. Cada libro define las etiquetas de sus recuadros, y e
 - Bloques de código con resaltado en grises.
 - Preguntas de autoevaluación con las respuestas al final de cada capítulo.
 - Resumen de una página por capítulo y glosario con enlaces internos.
+- Revisión automática antes de compilar (`check.py`) y exportación de las preguntas a Anki.
 
 ## Uso rápido
 
 ```bash
 pip install weasyprint markdown pygments pyyaml   # macOS: brew install pango
-python3 design-system/build.py libros/00-muestra/libro.md --png 3,7
+python3 design-system/build.py libros/00-muestra --png 3,7 --anki
 ```
 
-Genera `libros/00-muestra/libro.pdf` y dos PNG en gris para revisar.
+Genera `libros/00-muestra/libro.pdf`, dos PNG en gris para revisar y `libro.anki.txt` con las preguntas.
 
-Para un libro nuevo, copia `libros/00-muestra/` y edita `libro.md`.
+Para un libro nuevo, copia `libros/00-muestra/`, edita `libro.yml` y escribe un archivo por capítulo en `capitulos/`.
 
 ## Documentación
 

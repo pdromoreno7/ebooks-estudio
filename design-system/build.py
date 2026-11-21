@@ -48,7 +48,8 @@ BOX = {
 }
 # nombres antiguos (libros de la serie de backend) -> tipo actual
 ALIAS = {"entrevista": "practica", "nestjs": "ejemplo"}
-LABELS = {}   # se llena con el front matter de cada libro
+LABELS = {}     # se llena con el front matter de cada libro
+QUESTIONS = []  # (capítulo, n, título del capítulo, pregunta, respuesta HTML) para --anki
 IMG_EXT = (".png", ".jpg", ".jpeg", ".webp", ".gif")
 
 def glyph(kind, color):
@@ -221,14 +222,30 @@ def md_blocks(src, ch):
     return unstash(md("\n".join(out)))
 
 # ------------------------------------------------------------------ libro
-def build_html(md_path: Path, paper: str):
-    global BASE_DIR
-    BASE_DIR = md_path.parent
-    raw = md_path.read_text(encoding="utf-8")
+def load_source(path: Path):
+    """Devuelve (meta, markdown, carpeta base).
+    - Archivo .md: front matter YAML + contenido (formato clásico).
+    - Carpeta: libro.yml (metadatos) + capitulos/*.md en orden alfabético
+      (01-..., 02-..., 99-glosario.md). Las rutas de imágenes son relativas a la carpeta."""
+    if path.is_dir():
+        meta = yaml.safe_load((path / "libro.yml").read_text(encoding="utf-8")) or {}
+        files = sorted((path / "capitulos").glob("*.md"))
+        if not files:
+            sys.exit(f"ERROR: {path}/capitulos/ no tiene archivos .md")
+        raw = "\n\n".join(f.read_text(encoding="utf-8").strip() for f in files) + "\n"
+        return meta, raw, path
+    raw = path.read_text(encoding="utf-8")
     meta = {}
     if raw.startswith("---"):
         _, fm, raw = raw.split("---", 2)
         meta = yaml.safe_load(fm) or {}
+    return meta, raw, path.parent
+
+def build_html(src_path: Path, paper: str):
+    global BASE_DIR
+    meta, raw, BASE_DIR = load_source(src_path)
+    md_path = src_path if src_path.is_file() else src_path / "libro"
+    QUESTIONS.clear()
     LABELS.clear()
     for k, v in (meta.get("recuadros") or {}).items():
         LABELS[ALIAS.get(k, k)] = str(v)
@@ -276,6 +293,8 @@ def build_html(md_path: Path, paper: str):
             if lm: opener += lm.group(1); h = h[lm.end():]
             opener += "</header>"
             ans = ""
+            for n, qid, q, a in ch.questions:
+                QUESTIONS.append((chnum, n, title, q, a))
             if ch.questions:
                 aid = f"{cid}-respuestas"
                 toc.append(f'<li class="toc-sec"><a href="#{aid}">Respuestas de autoevaluación</a></li>')
@@ -300,21 +319,55 @@ def build_html(md_path: Path, paper: str):
         tpl = tpl.replace("{{" + k + "}}", str(v))
     return tpl
 
+def write_anki(path: Path, meta: dict):
+    """Preguntas de autoevaluación -> archivo de texto importable en Anki
+    (Archivo > Importar; separador tabulación; HTML activado)."""
+    tag_book = slug(str(meta.get("titulo_corto") or meta.get("titulo") or path.stem)).replace("-", "_")
+    rows = ["#separator:tab", "#html:true", "#tags column:3"]
+    clean = lambda s: re.sub(r"\s+", " ", s).replace("\t", " ").strip()
+    for chnum, n, chtitle, q, a in QUESTIONS:
+        tags = f"{tag_book} cap{chnum:02d}"
+        rows.append(f"{clean(md_inline(q))}\t{clean(a)}\t{tags}")
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    print(f"Anki -> {path} ({len(QUESTIONS)} tarjetas)")
+
+def check_fonts(pdf: Path):
+    """Avisa si el PDF usa una fuente de reserva (carácter fuera del subconjunto latino)."""
+    try:
+        r = subprocess.run(["pdffonts", str(pdf)], capture_output=True, text=True)
+    except FileNotFoundError:
+        return
+    bad = [l.split()[0] for l in r.stdout.splitlines()[2:] if not re.search(r"Inter|SourceSerif|Source-Serif|JetBrains", l, re.I)]
+    if bad:
+        print(f"AVISO fuentes de reserva en el PDF: {', '.join(sorted(set(bad)))} -> ejecuta check.py para ver qué carácter las provoca")
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("src"); ap.add_argument("-o", "--out")
+    ap.add_argument("src", help="libro.md o carpeta del libro (libro.yml + capitulos/)")
+    ap.add_argument("-o", "--out")
     ap.add_argument("--paper", choices=["ivory", "white"], default="ivory")
     ap.add_argument("--html", action="store_true")
     ap.add_argument("--png", help="páginas a exportar en gris 1236x1648, p.ej. 1,3,8")
+    ap.add_argument("--anki", action="store_true", help="exporta las preguntas a <libro>.anki.txt")
+    ap.add_argument("--no-check", action="store_true", help="no ejecutar check.py antes de compilar")
     a = ap.parse_args()
     src = Path(a.src).resolve()
-    out = Path(a.out).resolve() if a.out else src.with_suffix(".pdf")
+    default_out = (src / "libro.pdf") if src.is_dir() else src.with_suffix(".pdf")
+    out = Path(a.out).resolve() if a.out else default_out
     out.parent.mkdir(parents=True, exist_ok=True)
+    if not a.no_check:
+        sys.path.insert(0, str(HERE))
+        import check
+        for w in check.check(src):
+            print(f"AVISO {w}")
     doc = build_html(src, a.paper)
     if a.html: out.with_suffix(".html").write_text(doc, encoding="utf-8")
     from weasyprint import HTML
-    HTML(string=doc, base_url=str(src.parent)).write_pdf(str(out))
+    HTML(string=doc, base_url=str(BASE_DIR)).write_pdf(str(out))
     print(f"PDF -> {out}")
+    check_fonts(out)
+    if a.anki:
+        write_anki(out.with_suffix(".anki.txt"), load_source(src)[0])
     if a.png:
         for p in a.png.split(","):
             base = out.with_name(f"{out.stem}-p{int(p):02d}")

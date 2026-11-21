@@ -1,0 +1,13 @@
+libro: 0
+serie: Ebooks de estudio · Muestra del sistema
+titulo: Cómo se arma un libro de esta serie
+titulo_corto: Muestra del sistema
+subtitulo: Todos los componentes en un solo capítulo, para copiar y adaptar a cualquier tema
+autor: Pedro Moreno · notas de estudio
+fecha: Noviembre 2026
+lang: es
+recuadros:
+  analogia: Analogía
+  practica: En la práctica
+  ejemplo: Ejemplo
+  dato: Dato clave

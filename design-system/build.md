@@ -16,13 +16,15 @@ design-system/
   fonts/    (12 .woff2 de @fontsource + licencias OFL)
 libros/
   00-muestra/
-    libro.md
+    libro.yml          (metadatos: portada, serie, etiquetas)
+    capitulos/
+      01-....md        (un archivo por capítulo, en orden alfabético)
+      99-glosario.md
     diagramas/*.svg
     capturas/*.png
-  01-<tema>/
-    libro.md
-    ...
 ```
+
+Un libro también puede ser un único `libro.md` con front matter (formato clásico); los dos se compilan igual. Para libros de más de un capítulo, usa la carpeta: editar un capítulo no obliga a tocar el resto.
 
 Fuentes: si falta `fonts/`, se recrea con
 `npm pack @fontsource/source-serif-4 @fontsource/inter @fontsource/jetbrains-mono`
@@ -31,24 +33,33 @@ y copiando de `files/` los pesos listados en DESIGN.md §3 (subconjunto `latin`)
 ## 2. Uso
 
 ```bash
-python3 design-system/build.py libros/01-tema/libro.md                 # -> libro.pdf (marfil)
-python3 design-system/build.py libro.md -o out/01.pdf --paper white    # fondo blanco (máximo contraste)
-python3 design-system/build.py libro.md --html                         # guarda el HTML intermedio
-python3 design-system/build.py libro.md --png 1,6,8                    # + PNG 1236×1648 en gris para revisar
+python3 design-system/build.py libros/01-tema                 # -> libros/01-tema/libro.pdf (marfil)
+python3 design-system/build.py libros/01-tema --paper white   # fondo blanco (máximo contraste)
+python3 design-system/build.py libros/01-tema --png 1,6,8     # + PNG 1236×1648 en gris para revisar
+python3 design-system/build.py libros/01-tema --anki          # + libro.anki.txt con las preguntas
+python3 design-system/build.py libros/01-tema --html          # guarda el HTML intermedio
+python3 design-system/check.py libros/01-tema                 # solo revisar, sin compilar
 ```
+
+`build.py` ejecuta `check.py` antes de compilar e imprime avisos (`--no-check` lo desactiva). Después de compilar avisa si el PDF usó una fuente de reserva.
+
+### Tarjetas para Anki
+`--anki` exporta las preguntas de autoevaluación a `libro.anki.txt`. En Anki: *Archivo > Importar*, elige el archivo y un mazo; el separador (tabulación), el HTML y las etiquetas (`libro` + `capNN`) ya vienen indicados en el archivo.
 
 Pasar el PDF al Kindle: correo *Send to Kindle* **sin** "convert" en el asunto (si se convierte, se pierde la maquetación) o por USB a `documents/`.
 
 ## 3. Empezar un libro nuevo
 
 1. Copia `libros/00-muestra/` como `libros/NN-tema/`.
-2. Cambia el front matter (número, serie, título, etiquetas de recuadros).
-3. Borra el contenido de muestra y escribe el tuyo.
-4. Compila con `--png` y revisa las páginas en gris.
+2. Cambia `libro.yml` (número, serie, título, etiquetas de recuadros).
+3. Borra los capítulos de muestra y escribe los tuyos en `capitulos/`.
+4. Compila con `--png`, resuelve los avisos y revisa las páginas en gris.
 
 ## 4. Sintaxis del Markdown
 
-### Front matter (portada, encabezados y etiquetas)
+### Metadatos: `libro.yml` (o front matter de `libro.md`)
+
+En la carpeta, `libro.yml` lleva estas claves sin las líneas `---`. En el formato clásico, van como front matter al inicio de `libro.md`.
 
 ```yaml
 ---
@@ -120,8 +131,10 @@ Retención <span class="pos">métrica</span>
 Ancla de cada término: `#g-` + término en minúsculas, sin tildes, con guiones.
 
 ## 5. Checklist antes de dar por bueno un libro
-1. `--png` de portada, una página con recuadros, una con captura y el resumen; mirarlas en gris.
-2. El resumen ocupa **una** página (si no, recortar texto).
-3. `pdffonts libro.pdf` no muestra `DejaVu` (si aparece, hay un carácter fuera del subconjunto: cámbialo o usa SVG).
-4. Ninguna línea de código pasa de ~70 caracteres.
-5. Las capturas se leen en el PNG de verificación; si no, recórtalas más.
+1. `build.py` termina **sin avisos** (caracteres sin fuente, código largo, imágenes faltantes o pequeñas, resúmenes largos, preguntas vacías, datos sin fuentes).
+2. `--png` de portada, una página con recuadros, una con captura y un resumen; mirarlas en gris.
+3. Cada resumen ocupa **una** página (si no, recortar texto).
+4. Las capturas se leen en el PNG de verificación; si no, recórtalas más.
+
+## 6. Fuentes
+Todo capítulo con datos actuales (cifras, plataformas, herramientas) termina con `## Fuentes` y una lista de enlaces. `check.py` avisa si un capítulo usa `:::dato` sin esa sección.
